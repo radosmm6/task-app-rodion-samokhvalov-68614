@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Task Manager – Rodion Samokhvalov 68614</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<div class="app-shell">
+  <header class="app-header">
+    <div class="project-info">
+      <div class="project-badge">Mini project • CRUD</div>
+      <h1 class="project-title">Task Manager</h1>
+      <p class="project-subtitle">
+        Simple task board with full CRUD • Rodion Samokhvalov 68614
+      </p>
+    </div>
+    <button class="btn primary" id="new-task-btn">
+      + Add Task
+    </button>
+  </header>
+
+  <main class="app-main">
+    <section class="panel panel-main">
+      <div class="panel-header">
+        <div>
+          <h2>Tasks</h2>
+          <p class="muted">All tasks stored in SQLite via REST API</p>
+        </div>
+        <div class="panel-controls">
+          <label class="filter-label">
+            Status
+            <select id="status-filter" class="select">
+              <option value="all">All</option>
+              <option value="todo">Todo</option>
+              <option value="in_progress">In progress</option>
+              <option value="done">Done</option>
+            </select>
+          </label>
+        </div>
+      </div>
+
+      <div id="empty-state" class="empty-state">
+        <div class="empty-icon">✅</div>
+        <div class="empty-text">
+          <h3>No tasks yet</h3>
+          <p>Click “Add Task” to create your first one.</p>
+        </div>
+      </div>
+
+      <div id="task-list" class="task-list">
+        <!-- tasks will be rendered here -->
+      </div>
+    </section>
+
+    <aside class="panel panel-side">
+      <h2 id="form-title">New task</h2>
+      <form id="task-form" class="form">
+        <input type="hidden" id="task-id">
+
+        <label class="field">
+          <span class="field-label">Title</span>
+          <input id="title" class="input" type="text" placeholder="Write task title" required minlength="1" maxlength="200">
+        </label>
+
+        <label class="field">
+          <span class="field-label">Description</span>
+          <textarea id="description" class="textarea" rows="3" placeholder="Optional details"></textarea>
+        </label>
+
+        <div class="field-row">
+          <label class="field">
+            <span class="field-label">Status</span>
+            <select id="status" class="select">
+              <option value="todo">Todo</option>
+              <option value="in_progress">In progress</option>
+              <option value="done">Done</option>
+            </select>
+          </label>
+
+          <label class="field">
+            <span class="field-label">Due date</span>
+            <input id="due_date" class="input" type="date">
+          </label>
+        </div>
+
+        <div id="form-errors" class="form-errors"></div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn primary" id="save-btn">Save task</button>
+          <button type="button" class="btn ghost" id="cancel-edit-btn">Cancel</button>
+        </div>
+      </form>
+
+      <p class="muted small">
+        Data is persisted in <code>database.db</code> via Flask + SQLite.
+      </p>
+    </aside>
+  </main>
+</div>
+
+<script src="/static/app.js"></script>
+</body>
+</html>
