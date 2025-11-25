@@ -4,6 +4,7 @@ const taskList = document.getElementById("task-list");
 const emptyState = document.getElementById("empty-state");
 const statusFilter = document.getElementById("status-filter");
 
+// Form elements
 const form = document.getElementById("task-form");
 const formTitle = document.getElementById("form-title");
 const idInput = document.getElementById("task-id");
@@ -11,6 +12,9 @@ const titleInput = document.getElementById("title");
 const descInput = document.getElementById("description");
 const statusInput = document.getElementById("status");
 const dueDateInput = document.getElementById("due_date");
+const categoryInput = document.getElementById("category");
+const priorityInput = document.getElementById("priority");
+
 const errorsBox = document.getElementById("form-errors");
 const saveBtn = document.getElementById("save-btn");
 const cancelEditBtn = document.getElementById("cancel-edit-btn");
@@ -18,13 +22,16 @@ const newTaskBtn = document.getElementById("new-task-btn");
 
 let tasks = [];
 
-// ----------- Helpers -----------
+
+// ----------- HELPERS -----------
 
 function resetForm() {
   idInput.value = "";
   titleInput.value = "";
   descInput.value = "";
   statusInput.value = "todo";
+  categoryInput.value = "general";
+  priorityInput.value = "medium";
   dueDateInput.value = "";
   errorsBox.textContent = "";
   formTitle.textContent = "New task";
@@ -36,49 +43,100 @@ function fillForm(task) {
   titleInput.value = task.title;
   descInput.value = task.description || "";
   statusInput.value = task.status || "todo";
+  categoryInput.value = task.category || "general";
+  priorityInput.value = task.priority || "medium";
   dueDateInput.value = task.due_date || "";
   errorsBox.textContent = "";
   formTitle.textContent = "Edit task";
   saveBtn.textContent = "Update task";
 }
 
-function formatDueDate(iso) {
-  if (!iso) return "No due date";
-  try {
-    const d = new Date(iso);
-    if (Number.isNaN(d.getTime())) return iso;
-    return d.toLocaleDateString();
-  } catch {
-    return iso;
+function escapeHtml(str) {
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
+
+function formatDueDate(date) {
+  if (!date) return "No due date";
+  const d = new Date(date);
+  if (isNaN(d.getTime())) return date;
+  return d.toLocaleDateString();
+}
+
+
+// ----------- CATEGORY COLORS -----------
+
+function categoryClass(cat) {
+  switch (cat) {
+    case "work": return "pill cat-work";
+    case "study": return "pill cat-study";
+    case "home": return "pill cat-home";
+    case "hobby": return "pill cat-hobby";
+    case "sport": return "pill cat-sport";
+    case "other": return "pill cat-other";
+    default: return "pill cat-general";
   }
 }
 
+function categoryLabel(cat) {
+  return {
+    general: "General",
+    work: "Work",
+    study: "Study",
+    home: "Home",
+    hobby: "Hobby",
+    sport: "Sport",
+    other: "Other"
+  }[cat] || "General";
+}
+
+
+// ----------- PRIORITY COLORS -----------
+
+function priorityClass(p) {
+  switch (p) {
+    case "high": return "pill pr-high";
+    case "medium": return "pill pr-medium";
+    case "low": return "pill pr-low";
+    default: return "pill pr-medium";
+  }
+}
+
+function priorityLabel(p) {
+  return {
+    high: "High",
+    medium: "Medium",
+    low: "Low"
+  }[p] || "Medium";
+}
+
+
+// ----------- STATUS COLORS (already existed) -----------
+
 function statusClass(status) {
   switch (status) {
-    case "done":
-      return "status-pill done";
-    case "in_progress":
-      return "status-pill in-progress";
-    default:
-      return "status-pill todo";
+    case "done": return "status-pill done";
+    case "in_progress": return "status-pill in-progress";
+    default: return "status-pill todo";
   }
 }
 
 function statusLabel(status) {
   switch (status) {
-    case "done":
-      return "Done";
-    case "in_progress":
-      return "In progress";
-    default:
-      return "Todo";
+    case "done": return "Done";
+    case "in_progress": return "In progress";
+    default: return "Todo";
   }
 }
 
-// ----------- Rendering -----------
+
+// ----------- RENDERING -----------
 
 function renderTasks() {
   const filter = statusFilter.value;
+
   const visible = tasks.filter(t =>
     filter === "all" ? true : (t.status || "todo") === filter
   );
@@ -99,53 +157,42 @@ function renderTasks() {
       <div class="task-main">
         <div class="task-title-row">
           <span class="task-title">${escapeHtml(task.title)}</span>
-          <span class="${statusClass(task.status)}">
-            ${statusLabel(task.status)}
-          </span>
+          <span class="${statusClass(task.status)}">${statusLabel(task.status)}</span>
         </div>
+
         <div class="task-meta">
           <span>${escapeHtml(task.description || "No description")}</span>
         </div>
+
+        <div class="task-meta tags-row">
+          <span class="${categoryClass(task.category)}">${categoryLabel(task.category)}</span>
+          <span class="${priorityClass(task.priority)}">${priorityLabel(task.priority)}</span>
+        </div>
+
         <div class="task-meta">
           <span class="meta-pill">Due: ${formatDueDate(task.due_date)}</span>
           <span class="meta-id">#${task.id}</span>
         </div>
       </div>
+
       <div class="task-actions">
-        <button class="icon-btn" data-action="edit" title="Edit task">
-          ✏️
-        </button>
-        <button class="icon-btn danger" data-action="delete" title="Delete task">
-          🗑
-        </button>
+        <button class="icon-btn" data-action="edit" title="Edit task">✏️</button>
+        <button class="icon-btn danger" data-action="delete" title="Delete task">🗑</button>
       </div>
     `;
 
-    const editBtn = row.querySelector('[data-action="edit"]');
-    const deleteBtn = row.querySelector('[data-action="delete"]');
-
-    editBtn.addEventListener("click", () => fillForm(task));
-    deleteBtn.addEventListener("click", () => handleDelete(task.id));
+    row.querySelector('[data-action="edit"]').onclick = () => fillForm(task);
+    row.querySelector('[data-action="delete"]').onclick = () => handleDelete(task.id);
 
     taskList.appendChild(row);
   });
 }
 
-function escapeHtml(str) {
-  return String(str)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;");
-}
 
-// ----------- API calls -----------
+// ----------- API -----------
 
 async function loadTasks() {
   const res = await fetch(API);
-  if (!res.ok) {
-    console.error("Failed to load tasks", res.statusText);
-    return;
-  }
   tasks = await res.json();
   renderTasks();
 }
@@ -153,15 +200,14 @@ async function loadTasks() {
 async function handleDelete(id) {
   if (!confirm(`Delete task #${id}?`)) return;
   const res = await fetch(`${API}/${id}`, { method: "DELETE" });
-  if (!res.ok) {
-    alert("Failed to delete task");
-    return;
+  if (res.ok) {
+    tasks = tasks.filter(t => t.id !== id);
+    renderTasks();
   }
-  tasks = tasks.filter(t => t.id !== id);
-  renderTasks();
 }
 
-// ----------- Form events -----------
+
+// ----------- FORM SUBMIT -----------
 
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
@@ -172,6 +218,8 @@ form.addEventListener("submit", async (e) => {
     description: descInput.value.trim() || null,
     status: statusInput.value,
     due_date: dueDateInput.value || null,
+    category: categoryInput.value,
+    priority: priorityInput.value
   };
 
   const id = idInput.value;
@@ -185,34 +233,25 @@ form.addEventListener("submit", async (e) => {
   });
 
   if (!res.ok) {
-    let msg = "Validation error";
-    try {
-      const data = await res.json();
-      if (data.error) msg = data.error;
-      if (data.errors) msg = JSON.stringify(data.errors);
-    } catch (_) {}
-    errorsBox.textContent = msg;
+    const data = await res.json().catch(() => null);
+    errorsBox.textContent = data?.error || "Validation error";
     return;
   }
 
-  // обновим список с сервера, чтобы не думать о локальном состоянии
   resetForm();
   await loadTasks();
 });
 
-cancelEditBtn.addEventListener("click", (e) => {
-  e.preventDefault();
-  resetForm();
-});
-
-newTaskBtn.addEventListener("click", () => {
+cancelEditBtn.onclick = resetForm;
+newTaskBtn.onclick = () => {
   resetForm();
   titleInput.focus();
-});
+};
 
-statusFilter.addEventListener("change", renderTasks);
+statusFilter.onchange = renderTasks;
 
-// ----------- Initial load -----------
+
+// ----------- INITIAL -----------
 
 loadTasks();
 resetForm();
