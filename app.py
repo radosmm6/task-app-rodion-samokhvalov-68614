@@ -1,7 +1,7 @@
 import pkgutil
 import importlib.util
 
-# --- Patch for Python 3.14 ---
+# --- Патч для Python 3.14: добавляем get_loader (нужно Flask) ---
 if not hasattr(pkgutil, "get_loader"):
     def get_loader(name):
         try:
@@ -14,7 +14,6 @@ from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
 import sqlite3
 import os
-from datetime import datetime
 
 app = Flask(__name__)
 CORS(app)
@@ -22,8 +21,11 @@ CORS(app)
 DB_PATH = "database.db"
 
 
-# ---------- INIT DB ----------
+# -------------------------------------------------------------------
+#   INIT DATABASE (с нуля)
+# -------------------------------------------------------------------
 def init_db():
+    """Создаёт базу, если её нет, и накатывает миграцию."""
     if not os.path.exists(DB_PATH):
         conn = sqlite3.connect(DB_PATH)
         cursor = conn.cursor()
@@ -34,21 +36,27 @@ def init_db():
         conn.commit()
         conn.close()
 
+
 init_db()
 
 
-# ---------- DB Helper ----------
+# -------------------------------------------------------------------
+#   HELPERS
+# -------------------------------------------------------------------
 def query_db(query, args=(), one=False):
     conn = sqlite3.connect(DB_PATH)
     cur = conn.cursor()
     cur.execute(query, args)
-    rows = cur.fetchall()
+    rv = cur.fetchall()
     conn.commit()
     conn.close()
-    return (rows[0] if rows else None) if one else rows
+    return (rv[0] if rv else None) if one else rv
 
 
-# ---------- API ----------
+# -------------------------------------------------------------------
+#   API ENDPOINTS
+# -------------------------------------------------------------------
+
 @app.route("/tasks", methods=["GET"])
 def get_tasks():
     rows = query_db("SELECT * FROM tasks ORDER BY id DESC")
@@ -59,8 +67,8 @@ def get_tasks():
             "description": r[2],
             "due_date": r[3],
             "status": r[4],
-            "priority": r[5],
-            "category": r[6],
+            "category": r[5],
+            "priority": r[6],
         }
         for r in rows
     ]
@@ -73,15 +81,16 @@ def get_task(task_id):
     if not r:
         return jsonify({"error": "Task not found"}), 404
 
-    return jsonify({
+    task = {
         "id": r[0],
         "title": r[1],
         "description": r[2],
         "due_date": r[3],
         "status": r[4],
-        "priority": r[5],
-        "category": r[6],
-    }), 200
+        "category": r[5],
+        "priority": r[6],
+    }
+    return jsonify(task), 200
 
 
 @app.route("/tasks", methods=["POST"])
@@ -93,16 +102,16 @@ def create_task():
 
     query_db(
         """
-        INSERT INTO tasks (title, description, due_date, status, priority, category)
+        INSERT INTO tasks (title, description, due_date, status, category, priority)
         VALUES (?, ?, ?, ?, ?, ?)
         """,
         (
             data["title"],
             data.get("description"),
             data.get("due_date"),
-            data.get("status"),
-            data.get("priority"),
-            data.get("category"),
+            data.get("status", "todo"),
+            data.get("category", "general"),
+            data.get("priority", "medium")
         ),
     )
 
@@ -111,16 +120,16 @@ def create_task():
 
 @app.route("/tasks/<int:task_id>", methods=["PUT"])
 def update_task(task_id):
-    data = request.get_json() or {}
     r = query_db("SELECT * FROM tasks WHERE id = ?", (task_id,), one=True)
-
     if not r:
         return jsonify({"error": "Task not found"}), 404
+
+    data = request.get_json() or {}
 
     query_db(
         """
         UPDATE tasks
-        SET title=?, description=?, due_date=?, status=?, priority=?, category=?
+        SET title=?, description=?, due_date=?, status=?, category=?, priority=?
         WHERE id=?
         """,
         (
@@ -128,8 +137,8 @@ def update_task(task_id):
             data.get("description", r[2]),
             data.get("due_date", r[3]),
             data.get("status", r[4]),
-            data.get("priority", r[5]),
-            data.get("category", r[6]),
+            data.get("category", r[5]),
+            data.get("priority", r[6]),
             task_id,
         ),
     )
@@ -143,11 +152,16 @@ def delete_task(task_id):
     return jsonify({"message": "Deleted"}), 200
 
 
-# ---------- FRONTEND ----------
+# -------------------------------------------------------------------
+#   FRONTEND ROUTE
+# -------------------------------------------------------------------
 @app.route("/")
 def index():
     return render_template("index.html")
 
 
+# -------------------------------------------------------------------
+#   RUN
+# -------------------------------------------------------------------
 if __name__ == "__main__":
     app.run(debug=True)
