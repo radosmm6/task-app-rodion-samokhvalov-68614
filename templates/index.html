@@ -9,10 +9,11 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="/static/style.css">
+  <link rel="stylesheet" href="/static/style.css?v=2">
 </head>
 <body>
 <div class="app-shell">
+
   <header class="app-header">
     <div class="project-info">
       <div class="project-badge">Mini project • CRUD</div>
@@ -21,18 +22,20 @@
         Simple task board with full CRUD • Rodion Samokhvalov 68614
       </p>
     </div>
-    <button class="btn primary" id="new-task-btn">
-      + Add Task
-    </button>
+
+    <button class="btn primary" id="new-task-btn">+ Add Task</button>
   </header>
 
   <main class="app-main">
+
+    <!-- LEFT SIDE — TASK LIST -->
     <section class="panel panel-main">
       <div class="panel-header">
         <div>
           <h2>Tasks</h2>
           <p class="muted">All tasks stored in SQLite via REST API</p>
         </div>
+
         <div class="panel-controls">
           <label class="filter-label">
             Status
@@ -47,34 +50,58 @@
       </div>
 
       <div id="empty-state" class="empty-state">
-        <div class="empty-icon">✅</div>
+        <div class="empty-icon">✨</div>
         <div class="empty-text">
           <h3>No tasks yet</h3>
-          <p>Click “Add Task” to create your first one.</p>
+          <p>Create your first task to begin.</p>
         </div>
       </div>
 
-      <div id="task-list" class="task-list">
-        <!-- tasks will be rendered here -->
-      </div>
+      <div id="task-list" class="task-list"></div>
     </section>
 
+    <!-- RIGHT SIDE — FORM -->
     <aside class="panel panel-side">
       <h2 id="form-title">New task</h2>
+
       <form id="task-form" class="form">
-        <input type="hidden" id="task-id">
+        <input type="hidden" id="task-id"/>
 
         <label class="field">
           <span class="field-label">Title</span>
-          <input id="title" class="input" type="text" placeholder="Write task title" required minlength="1" maxlength="200">
+          <input id="title" class="input" type="text" placeholder="Task title" required minlength="1">
         </label>
 
         <label class="field">
           <span class="field-label">Description</span>
-          <textarea id="description" class="textarea" rows="3" placeholder="Optional details"></textarea>
+          <textarea id="description" class="textarea" rows="3" placeholder="Optional description"></textarea>
         </label>
 
+        <!-- NEW ROW: CATEGORY + PRIORITY + STATUS -->
         <div class="field-row">
+
+          <label class="field">
+            <span class="field-label">Category</span>
+            <select id="category" class="select">
+              <option value="general">General</option>
+              <option value="work">Work</option>
+              <option value="study">Study</option>
+              <option value="home">Home</option>
+              <option value="hobby">Hobby</option>
+              <option value="sport">Sport</option>
+              <option value="other">Other</option>
+            </select>
+          </label>
+
+          <label class="field">
+            <span class="field-label">Priority</span>
+            <select id="priority" class="select">
+              <option value="low">Low</option>
+              <option value="medium" selected>Medium</option>
+              <option value="high">High</option>
+            </select>
+          </label>
+
           <label class="field">
             <span class="field-label">Status</span>
             <select id="status" class="select">
@@ -84,27 +111,29 @@
             </select>
           </label>
 
-          <label class="field">
-            <span class="field-label">Due date</span>
-            <input id="due_date" class="input" type="date">
-          </label>
         </div>
+
+        <label class="field">
+          <span class="field-label">Due date</span>
+          <input id="due_date" class="input" type="date">
+        </label>
 
         <div id="form-errors" class="form-errors"></div>
 
         <div class="form-actions">
-          <button type="submit" class="btn primary" id="save-btn">Save task</button>
-          <button type="button" class="btn ghost" id="cancel-edit-btn">Cancel</button>
+          <button class="btn primary" id="save-btn" type="submit">Save task</button>
+          <button class="btn ghost" id="cancel-edit-btn" type="button">Cancel</button>
         </div>
+
       </form>
 
-      <p class="muted small">
-        Data is persisted in <code>database.db</code> via Flask + SQLite.
-      </p>
+      <p class="muted small">Data is stored in <code>database.db</code></p>
+
     </aside>
   </main>
+
 </div>
 
-<script src="/static/app.js"></script>
+<script src="/static/app.js?v=2"></script>
 </body>
 </html>
