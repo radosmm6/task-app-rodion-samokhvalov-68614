@@ -299,6 +299,30 @@ body {
   opacity: 0.7;
 }
 
+/* CATEGORY pills */
+
+.pill {
+  padding: 3px 10px;
+  font-size: 11px;
+  border-radius: 999px;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.cat-general { background:#e2e8f0; color:#475569; }
+.cat-work    { background:#dbeafe; color:#1d4ed8; }
+.cat-study   { background:#ede9fe; color:#6d28d9; }
+.cat-home    { background:#dcfce7; color:#15803d; }
+.cat-hobby   { background:#fef3c7; color:#92400e; }
+.cat-sport   { background:#cffafe; color:#0e7490; }
+.cat-other   { background:#f3e8ff; color:#6b21a8; }
+
+/* PRIORITY pills */
+
+.pr-low    { background:#e2e8f0; color:#475569; }
+.pr-medium { background:#ffedd5; color:#b45309; }
+.pr-high   { background:#fee2e2; color:#b91c1c; }
+
 /* Status pills */
 
 .status-pill {
@@ -400,6 +424,13 @@ body {
   text-transform: uppercase;
   letter-spacing: 0.06em;
   color: var(--text-muted);
+}
+
+/* Tags row */
+
+.tags-row {
+  display: flex;
+  gap: 6px;
 }
 
 /* Responsive */
