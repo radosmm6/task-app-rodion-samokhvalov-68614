@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS tasks (
     title TEXT NOT NULL,
     description TEXT,
     due_date TEXT,
-    status TEXT,
-    priority TEXT DEFAULT 'medium',
-    category TEXT DEFAULT 'general'
+    status TEXT DEFAULT 'todo',
+    category TEXT DEFAULT 'general',
+    priority TEXT DEFAULT 'medium'
 );
