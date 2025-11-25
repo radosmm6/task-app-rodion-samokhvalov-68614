@@ -48,14 +48,9 @@ body {
 }
 
 .project-badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
   padding: 4px 10px;
   font-size: 11px;
   font-weight: 600;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
   border-radius: 999px;
   background: rgba(37, 99, 235, 0.08);
   color: #1d4ed8;
@@ -140,7 +135,7 @@ body {
   align-items: center;
   justify-content: center;
   gap: 6px;
-  transition: transform 0.08s ease, box-shadow 0.08s ease, background 0.1s ease;
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
 }
 
 .btn.primary {
@@ -172,9 +167,8 @@ body {
   border-radius: 10px;
   border: 1px solid rgba(148, 163, 184, 0.7);
   font-size: 13px;
-  outline: none;
   background: #f9fafb;
-  transition: border-color 0.1s ease, box-shadow 0.1s ease, background 0.1s ease;
+  transition: border-color 0.1s ease, box-shadow 0.1s ease;
 }
 
 .input:focus,
@@ -206,8 +200,8 @@ body {
 
 .field-label {
   font-size: 12px;
-  font-weight: 500;
   color: var(--text-muted);
+  font-weight: 500;
 }
 
 .field-row {
@@ -248,7 +242,7 @@ body {
   border-radius: 12px;
   border: 1px solid var(--border-subtle);
   background: linear-gradient(135deg, #ffffff, #f8fafc);
-  transition: box-shadow 0.1s ease, transform 0.08s ease, border-color 0.1s ease;
+  transition: 0.1s ease;
 }
 
 .task-row:hover {
@@ -266,19 +260,15 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
-  margin-bottom: 4px;
 }
 
 .task-title {
   font-size: 14px;
   font-weight: 600;
   color: var(--text-main);
-  flex: 1;
-  min-width: 0;
+  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .task-meta {
@@ -292,23 +282,45 @@ body {
 .meta-pill {
   padding: 2px 8px;
   border-radius: 999px;
-  background: rgba(148, 163, 184, 0.15);
+  background: rgba(148, 163, 184, 0.2);
 }
 
 .meta-id {
   opacity: 0.7;
 }
 
-/* Status pills */
+/* CATEGORY pills */
+
+.pill {
+  padding: 3px 10px;
+  font-size: 11px;
+  border-radius: 999px;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.cat-general { background:#e2e8f0; color:#475569; }
+.cat-work    { background:#dbeafe; color:#1d4ed8; }
+.cat-study   { background:#ede9fe; color:#6d28d9; }
+.cat-home    { background:#dcfce7; color:#15803d; }
+.cat-hobby   { background:#fef3c7; color:#92400e; }
+.cat-sport   { background:#cffafe; color:#0e7490; }
+.cat-other   { background:#f3e8ff; color:#6b21a8; }
+
+/* PRIORITY pills */
+
+.pr-low    { background:#e2e8f0; color:#475569; }
+.pr-medium { background:#ffedd5; color:#b45309; }
+.pr-high   { background:#fee2e2; color:#b91c1c; }
+
+/* STATUS pills */
 
 .status-pill {
   padding: 3px 10px;
-  border-radius: 999px;
   font-size: 11px;
+  border-radius: 999px;
   font-weight: 600;
-  letter-spacing: 0.02em;
   text-transform: uppercase;
-  white-space: nowrap;
 }
 
 .status-pill.todo {
@@ -326,7 +338,7 @@ body {
   color: #15803d;
 }
 
-/* Actions */
+/* Buttons in task list */
 
 .task-actions {
   display: flex;
@@ -341,17 +353,14 @@ body {
   border-radius: 999px;
   width: 28px;
   height: 28px;
-  font-size: 14px;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: background 0.1s ease, transform 0.08s ease;
 }
 
 .icon-btn:hover {
   background: rgba(148, 163, 184, 0.3);
-  transform: translateY(-0.5px);
 }
 
 .icon-btn.danger {
@@ -390,29 +399,22 @@ body {
   color: var(--text-muted);
 }
 
-/* Filter */
+/* Tags row */
 
-.filter-label {
+.tags-row {
   display: flex;
-  flex-direction: column;
-  gap: 4px;
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--text-muted);
+  gap: 6px;
 }
 
 /* Responsive */
 
 @media (max-width: 880px) {
   .app-main {
-    grid-template-columns: minmax(0, 1fr);
+    grid-template-columns: 1fr;
   }
-
   .panel-side {
     order: -1;
   }
-
   .app-header {
     flex-direction: column;
     align-items: flex-start;
